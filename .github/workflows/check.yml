@@ -2,7 +2,11 @@ name: VPN Gate Node Check
 
 on:
   schedule:
-    - cron: 0 0 * * *
+    # */30 * * * *  每小时的 0 分和 30 分各跑一次
+    # 	0 * * * *  每小时的 0 分跑一次
+    # 0 */4 * * *  每 4 小时跑一次（0点、4点、8点...）
+    # 0 */12 * * *  每 12 小时跑一次（0点和12点）
+    - cron: 0 0 * * *  # 每天 0 点（午夜 24小时）跑一次
   workflow_dispatch:
 
 permissions:
@@ -33,7 +37,7 @@ jobs:
       - name: Get VPN Gate nodes + check via Cloudflare Worker + build page
         run: python vpngate.py
         env:
-          # 已部署的检测 Worker (不要改动: 检测统一走这里)
+          # 已部署的检测 Worker (不要改动: 检测统一走这里)，在 GitHub Secret（配置隐藏变量）添加，名称 DOMAIN
           CHECK_WORKER: ${{ secrets.DOMAIN }}
           CHECK_CONCURRENCY: "32"
           CHECK_TIMEOUT: "90"
